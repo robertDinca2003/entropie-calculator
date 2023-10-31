@@ -202,8 +202,6 @@ export default function Home() {
     entropieMesaj(mesaj);
   };
 
-  const criptare = (mes) => {};
-
   return (
     <main
       className={`flex bg-slate-100 gap-10 flex-col items-center justify-between py-12 lg:p-24 px-4 sm:px-8 md:px-12 lg:px-24 ${inter.className}`}
@@ -286,7 +284,7 @@ export default function Home() {
       <h2 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
         Codul Huffman pentru aparitiile de mai sus
       </h2>
-      <div className="border-2 p-8 text-sm xsm:text-md sm:text-lg rounded-[20px] border-black grid grid-cols-2 xsm:grid-cols-3 md:grid-cols-5 md:grid-rows-6 lg:grid-rows-4 lg:grid-cols-7 gap-5 justify-center w-[100%]  items-center">
+      <div className="border-2 p-8 text-sm xsm:text-md sm:text-lg rounded-[20px] border-black grid grid-cols-1 xsm:grid-cols-2 md:grid-cols-4 md:grid-rows-6 lg:grid-rows-4 lg:grid-cols-7 gap-5 justify-center w-[100%]  items-center">
         {huffmanCode.map((val, key) => {
           if (val == "") return;
           return (
