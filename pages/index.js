@@ -157,7 +157,24 @@ export default function Home() {
     genCode(root, "");
     console.log(huffman);
     setHuffmanCode(huffman);
-    criptare();
+
+    let mesajcriptat = "";
+
+    if (lungime > 5500) {
+      setCripted("Mesajul are peste 5000 de caractere");
+    } else {
+      for (let i = 0; i < lungime; i++) {
+        if (
+          mesaj[i].toUpperCase().charCodeAt(0) >= 65 &&
+          mesaj[i].toUpperCase().charCodeAt(0) <= 90
+        )
+          mesajcriptat =
+            mesajcriptat + huffman[mesaj[i].toUpperCase().charCodeAt(0) - 65];
+        if (mesaj[i].charCodeAt(0) == 32)
+          mesajcriptat = mesajcriptat + huffman[26];
+      }
+      setCripted(mesajcriptat);
+    }
   };
 
   function file2Buffer(file) {
@@ -182,28 +199,10 @@ export default function Home() {
     console.log(JSON.stringify(fileText));
     // axios.post("http://localhost:3000/api/hello", { txt: fileText });
     setMesaj(fileText);
-    entropieMesaj();
+    entropieMesaj(mesaj);
   };
 
-  const criptare = () => {
-    let mesajcriptat = "";
-    let lungime = mesaj.length;
-    if (lungime > 5500) {
-      setCripted("Mesajul are peste 5000 de caractere");
-      return;
-    }
-    for (let i = 0; i < lungime; i++) {
-      if (
-        mesaj[i].toUpperCase().charCodeAt(0) >= 65 &&
-        mesaj[i].toUpperCase().charCodeAt(0) <= 90
-      )
-        mesajcriptat =
-          mesajcriptat + huffmanCode[mesaj[i].toUpperCase().charCodeAt(0) - 65];
-      if (mesaj[i].charCodeAt(0) == 32)
-        mesajcriptat = mesajcriptat + huffmanCode[26];
-    }
-    setCripted(mesajcriptat);
-  };
+  const criptare = (mes) => {};
 
   return (
     <main
