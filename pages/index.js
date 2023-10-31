@@ -9,26 +9,69 @@ export default function Home() {
   const [mesaj, setMesaj] = useState("");
   let litere = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,
+    0, 0,
   ];
   let procente = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,
+    0, 0,
   ];
   let totAscii = [];
   let procenteTotAscii = [];
-  const [valori, setValori] = useState([]);
-  const [procentaj, setProcentaj] = useState([]);
+  let huffman = [];
+  const [valori, setValori] = useState([
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0,
+  ]);
+  const [procentaj, setProcentaj] = useState([
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0,
+  ]);
   const [entropieLitere, setEntropieLitere] = useState(0);
-  const [procentajAscii, setProcentajAscii] = useState([]);
+  const [procentajAscii, setProcentajAscii] = useState([
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0,
+  ]);
   const [entropieAscii, setEntropieAscii] = useState(0);
+  const [huffmanCode, setHuffmanCode] = useState([
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0,
+  ]);
+  const [cripted, setCripted] = useState("");
+  class HuffmanNode {
+    constructor() {
+      this.data = 0;
+      this.ch = "";
+      this.left = this.right = null;
+    }
+  }
+  const genCode = (root, s) => {
+    if (
+      root.left == null &&
+      root.right == null &&
+      ((root.c.charCodeAt(0) >= 65 && root.c.charCodeAt(0) <= 90) ||
+        root.c.charCodeAt(0) == 32)
+    )
+      if (root.c === "Space") {
+        huffman[26] = s;
+        return;
+      } else {
+        huffman[root.c.charCodeAt(0) - 65] = s;
+        return;
+      }
+    genCode(root.left, s + "0");
+    genCode(root.right, s + "1");
+  };
+
   useEffect(() => {
     console.log(mesaj);
   }, [mesaj]);
 
   const entropieMesaj = () => {
     if (mesaj.length < 1) return;
-    for (let i = 0; i < 26; i++) litere[i] = 0;
+    for (let i = 0; i <= 26; i++) {
+      litere[i] = 0;
+      huffman[i] = "";
+    }
     for (let i = 0; i < 1001; i++) (totAscii[i] = 0), (procenteTotAscii[i] = 0);
 
     const lungime = mesaj.length;
@@ -39,6 +82,7 @@ export default function Home() {
       if (mesaj[i].charCodeAt(0) >= 97 && mesaj[i].charCodeAt(0) <= 122) {
         litere[mesaj[i].charCodeAt(0) - 97] += 1;
       }
+      if (mesaj[i].charCodeAt(0) == 32) litere[26] += 1;
       totAscii[mesaj[i].charCodeAt(0)]++;
     }
 
@@ -47,9 +91,9 @@ export default function Home() {
 
     let totalLiter = 0;
 
-    for (let i = 0; i < 26; i++) totalLiter += litere[i];
+    for (let i = 0; i <= 26; i++) totalLiter += litere[i];
 
-    for (let i = 0; i < 26; i++) {
+    for (let i = 0; i <= 26; i++) {
       procente[i] = (litere[i] / totalLiter) * 100;
     }
     for (let i = 0; i < 1001; i++) {
@@ -58,12 +102,12 @@ export default function Home() {
     setProcentaj(procente);
     setProcentajAscii(procenteTotAscii);
     let proba = 0;
-    for (let i = 0; i < 26; i++) proba += procente[i];
+    for (let i = 0; i <= 26; i++) proba += procente[i];
     console.log("totalul este ", proba);
 
     let entropie = 0;
 
-    for (let i = 0; i < 26; i++) {
+    for (let i = 0; i <= 26; i++) {
       if (procente[i] == 0) continue;
       entropie += (procente[i] / 100) * Math.log2(100 / procente[i]);
     }
@@ -77,6 +121,43 @@ export default function Home() {
 
     setEntropieAscii(entropie);
     entropie = 0;
+    let q = [];
+    for (let i = 0; i <= 26; i++) {
+      if (litere[i] == 0) continue;
+      let huffN = new HuffmanNode();
+      if (i < 26) huffN.c = String.fromCharCode(i + 65);
+      else huffN.c = "Space";
+      huffN.data = procente[i];
+      huffN.left = null;
+      huffN.right = null;
+      q.push(huffN);
+    }
+
+    let root = null;
+    q.sort(function (a, b) {
+      return a.data - b.data;
+    });
+
+    while (q.length > 1) {
+      let x = q[0];
+      q.shift();
+      let y = q[0];
+      q.shift();
+      let f = new HuffmanNode();
+      f.data = x.data + y.data;
+      f.c = "+";
+      f.left = x;
+      f.right = y;
+      root = f;
+      q.push(f);
+      q.sort(function (a, b) {
+        return a.data - b.data;
+      });
+    }
+    genCode(root, "");
+    console.log(huffman);
+    setHuffmanCode(huffman);
+    criptare();
   };
 
   function file2Buffer(file) {
@@ -104,20 +185,55 @@ export default function Home() {
     entropieMesaj();
   };
 
+  const criptare = () => {
+    let mesajcriptat = "";
+    let lungime = mesaj.length;
+    if (lungime > 5500) {
+      setCripted("Mesajul are peste 5000 de caractere");
+      return;
+    }
+    for (let i = 0; i < lungime; i++) {
+      if (
+        mesaj[i].toUpperCase().charCodeAt(0) >= 65 &&
+        mesaj[i].toUpperCase().charCodeAt(0) <= 90
+      )
+        mesajcriptat =
+          mesajcriptat + huffmanCode[mesaj[i].toUpperCase().charCodeAt(0) - 65];
+      if (mesaj[i].charCodeAt(0) == 32)
+        mesajcriptat = mesajcriptat + huffmanCode[26];
+    }
+    setCripted(mesajcriptat);
+  };
+
   return (
     <main
-      className={`flex gap-10 flex-col items-center justify-between p-24 ${inter.className}`}
+      className={`flex bg-slate-100 gap-10 flex-col items-center justify-between py-12 lg:p-24 px-4 sm:px-8 md:px-12 lg:px-24 ${inter.className}`}
     >
-      <h1>Calculator de entropie a textului</h1>
-      <h2>
-        (entropia este calculata doar la nivelul literelor din alfabet, se
-        exclud automat toate simbolurile, cifrele si semnele de punctuatie)
+      <h1 className="italic font-bold lg:text-7xl md:text-5xl sm:text-4xl xsm:text-3xl text-xl text-center">
+        Calculator de entropie a textului
+      </h1>
+
+      <h2 className="text-xl text-center sm:text-2xl md:text-3xl lg:text-4xl">
+        Introduce un text de maxim 5000 de caractere
       </h2>
-      <h2>Introduce un text de maxim 5000 de caractere</h2>
-      <h2>Introdu un fisier propriu(pdf):</h2>
-      <form onSubmit={pdfCitire} className="flex flex-row justify-between">
-        <input type="file" name="inpFile" id="inpFile" />
-        <button type="submit" id="btnUpdate">
+      <h2 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+        Introdu un fisier propriu(doar txt):
+      </h2>
+      <form
+        onSubmit={pdfCitire}
+        className="flex gap-5 flex-col md:flex-row justify-center content-center self-center items-center md:justify-between"
+      >
+        <input
+          type="file"
+          name="inpFile"
+          id="inpFile"
+          className="self-center items-center w-[80%] md:w-[340px] justify-center content-center "
+        />
+        <button
+          type="submit"
+          id="btnUpdate"
+          className="border-2 border-black p-2 rounded-md hover:bg-black hover:text-slate-100 transition-colors duration-200"
+        >
           Upload
         </button>
       </form>
@@ -126,7 +242,7 @@ export default function Home() {
         onChange={(e) => {
           setMesaj(e.target.value);
         }}
-        className="border-2 border-black rounded-[30px] w-[50vw] py-2 px-4"
+        className="w-[90%] sm:w-[80%] md:w-[70%] lg:w-[50%] border-2 border-black rounded-[30px]  py-2 px-4"
         type="text"
         rows={20}
       />
@@ -136,38 +252,77 @@ export default function Home() {
       >
         Proceseaza
       </button>
-      <h2>Numarul aparitilor din textul dat: </h2>
-      <div className="grid grid-rows-4 grid-cols-7 gap-5 justify-center">
+      <h2 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+        Numarul aparitilor din textul dat:{" "}
+      </h2>
+      <div className="border-2 p-4 text-sm xsm:text-md sm:text-lg rounded-[20px] w-[100%] border-black grid grid-cols-2 xsm:grid-cols-3 md:grid-cols-5 md:grid-rows-6 lg:grid-rows-4 lg:grid-cols-7 gap-5 justify-center">
         {valori.map((val, key) => {
           return (
-            <h1 key={key}>
-              {String.fromCharCode(key + 65)}:{val}
+            <h1
+              className="border-2 py-1 px-2 rounded-lg border-black"
+              key={key}
+            >
+              {key == 26 ? "Space" : String.fromCharCode(key + 65)}:{val}
             </h1>
           );
         })}
       </div>
-      <div className="grid grid-rows-4 grid-cols-7 gap-5 justify-center">
+
+      <h2 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+        Numarul procentual de aparitii din text
+      </h2>
+      <div className="border-2 p-8 text-sm xsm:text-md sm:text-lg rounded-[20px] border-black grid grid-cols-2 xsm:grid-cols-3 md:grid-cols-5 md:grid-rows-6 lg:grid-rows-4 lg:grid-cols-7 gap-5 justify-center w-[100%]  items-center">
         {procentaj.map((val, key) => {
           return (
-            <h1 key={key}>
-              {String.fromCharCode(key + 65)}:{Math.round(val * 100) / 100}%
+            <h1
+              className="border-2 py-1 px-1 rounded-lg border-black"
+              key={key}
+            >
+              {key == 26 ? "Space" : String.fromCharCode(key + 65)}:
+              {Math.round(val * 100) / 100}%
             </h1>
           );
         })}
       </div>
-      <h1>
-        Entropia literelor (fara case sensitive) din textul dat este:{" "}
-        {entropieLitere}
+      <h2 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+        Codul Huffman pentru aparitiile de mai sus
+      </h2>
+      <div className="border-2 p-8 text-sm xsm:text-md sm:text-lg rounded-[20px] border-black grid grid-cols-2 xsm:grid-cols-3 md:grid-cols-5 md:grid-rows-6 lg:grid-rows-4 lg:grid-cols-7 gap-5 justify-center w-[100%]  items-center">
+        {huffmanCode.map((val, key) => {
+          if (val == "") return;
+          return (
+            <h1
+              className="border-2 py-1 px-1 rounded-lg border-black"
+              key={key}
+            >
+              {key == 26 ? "Space" : String.fromCharCode(key + 65)}:{val}
+            </h1>
+          );
+        })}
+      </div>
+      <h1 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+        Textul initial criptat folosind codul Huffman (doar litere mari si
+        spatii):
+      </h1>
+      <h1 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl p-2 border-2 rounded-lg border-black">
+        {cripted}
+      </h1>
+      <h1 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
+        Entropia literelor (fara case sensitive si semne de punctiatie) din
+        textul dat este: {entropieLitere}
       </h1>
 
-      <h1>
+      <h1 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
         Entropia tuturor caracterelor din textul dat este: {entropieAscii}
       </h1>
-      <div className="grid grid-rows-32 grid-cols-8 gap-5 justify-center">
+      <div className="border-2 w-[100%]  p-4 text-sm xsm:text-md sm:text-lg rounded-[20px] border-black grid grid-cols-2 xsm:grid-cols-3 md:grid-cols-5  lg:grid-cols-7 gap-5 justify-center">
         {procentajAscii.map((val, key) => {
           if (val == 0) return;
           return (
-            <h1 key={key}>
+            <h1
+              className="py-1 px-1 border-2 border-black rounded-lg"
+              key={key}
+            >
               {key !== 32 ? String.fromCharCode(key) : "Space"}:
               {Math.round(val * 100) / 100}%
             </h1>
