@@ -1,3 +1,13 @@
+
+## Preview
+
+https://github.com/robertDinca2003/entropie-calculator/assets/71851178/87d6927d-7652-404c-b12e-039d5414479b
+
+## Access live demo now
+
+https://entropie-calculator.netlify.app/
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
