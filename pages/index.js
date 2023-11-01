@@ -174,6 +174,7 @@ export default function Home() {
           mesajcriptat = mesajcriptat + huffman[26];
       }
       setCripted(mesajcriptat);
+      console.log(cripted);
     }
   };
 
@@ -302,11 +303,11 @@ export default function Home() {
         spatii):
       </h1>
       <textarea
+        rows={5}
         readOnly
-        className="w-[90vw] text-start bg-transparent text-lg sm:text-xl md:text-2xl lg:text-3xl p-2 border-2 rounded-lg border-black"
-      >
-        {cripted}
-      </textarea>
+        value={cripted}
+        className="w-[90vw] bg-transparent text-start text-lg sm:text-xl md:text-2xl lg:text-3xl p-2 border-2 rounded-lg border-black"
+      ></textarea>
       <h1 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
         Entropia literelor (fara case sensitive si semne de punctiatie) din
         textul dat este: {entropieLitere}
