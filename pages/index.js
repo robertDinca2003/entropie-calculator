@@ -301,9 +301,12 @@ export default function Home() {
         Textul initial criptat folosind codul Huffman (doar litere mari si
         spatii):
       </h1>
-      <h1 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl p-2 border-2 rounded-lg border-black">
+      <textarea
+        readOnly
+        className="w-[90vw] text-start bg-transparent text-lg sm:text-xl md:text-2xl lg:text-3xl p-2 border-2 rounded-lg border-black"
+      >
         {cripted}
-      </h1>
+      </textarea>
       <h1 className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl">
         Entropia literelor (fara case sensitive si semne de punctiatie) din
         textul dat este: {entropieLitere}
